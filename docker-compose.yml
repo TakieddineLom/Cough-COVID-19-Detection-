@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  multimodal-covid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multimodal-covid:latest
+    container_name: covid-detection-framework
+    
+    # GPU access
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+      
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./results:/app/results
+    
+    ports:
+      - "8888:8888"  # Jupyter
+      - "8000:8000"  # FastAPI (if used)
+      - "6006:6006"  # TensorBoard
+    
+    # Resource limits
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 32G
+          cpus: '8'
+    
+    # Keep container running
+    tty: true
+    stdin_open: true
+
+  # Optional: Jupyter notebook service
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multimodal-covid:latest
+    container_name: covid-jupyter
+    command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./data:/app/data
+      - ./models:/app/models
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+---
