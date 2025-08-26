@@ -52,6 +52,6 @@ RUN chmod +x /app/*.py
 EXPOSE 8000
 
 # Command to run the application
-CMD ["python", "multimodal_covid_detection.py"]
+CMD ["python", "13_CNN-ViT-XGb.py"]
 
 ---
