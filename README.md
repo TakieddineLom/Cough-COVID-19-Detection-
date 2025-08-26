@@ -1,57 +1,89 @@
-# Cough-COVID-19-Detection-
+# Multimodal COVID-19 Detection Framework
 
-# Dockerfile
-FROM nvidia/cuda:11.8-runtime-ubuntu20.04
+## Quick Start
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
+### Option 1: Docker (Recommended)
+```bash
+# Clone repository
+git clone <repository-url>
+cd multimodal-covid-detection
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3.10 \
-    python3-pip \
-    python3.10-dev \
-    git \
-    wget \
-    curl \
-    build-essential \
-    libsndfile1 \
-    libsndfile1-dev \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
+# Run setup script
+chmod +x setup.sh
+./setup.sh
 
-# Set Python 3.10 as default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+# Start the framework
+docker-compose up multimodal-covid
 
-# Upgrade pip
-RUN python -m pip install --upgrade pip
+# For Jupyter notebook
+docker-compose up jupyter
+# Then visit http://localhost:8888
+```
 
-# Set working directory
-WORKDIR /app
+### Option 2: Conda Environment
+```bash
+# Create conda environment
+conda env create -f environment.yml
+conda activate multimodal-covid
 
-# Copy requirements file
-COPY requirements.txt .
+# Install additional dependencies
+pip install -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Run the framework
+python multimodal_covid_detection.py
+```
 
-# Install PyTorch with CUDA support
-RUN pip install torch==1.13.0+cu116 torchvision==0.14.0+cu116 torchaudio==0.13.0+cu116 -f https://download.pytorch.org/whl/torch_stable.html
+### Option 3: pip Installation
+```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Copy application code
-COPY . .
+# Install dependencies
+pip install -r requirements.txt
 
-# Create directories for models and data
-RUN mkdir -p /app/models /app/data /app/logs
+# Run the framework
+python multimodal_covid_detection.py
+```
 
-# Set permissions
-RUN chmod +x /app/*.py
+## System Requirements
 
-# Expose port for any web interface (optional)
-EXPOSE 8000
+- **GPU**: NVIDIA GPU with CUDA 11.6+ (recommended)
+- **Memory**: 16GB RAM minimum, 32GB recommended
+- **Storage**: 10GB free space for models and data
+- **OS**: Ubuntu 20.04+, Windows 10+, or macOS 10.15+
 
-# Command to run the application
-CMD ["python", "13_CNN-ViT-XGb.py"]
+## Data Preparation
 
----
+1. Download COUGHVID dataset
+2. Place audio files in `data/raw/audio/`
+3. Place metadata CSV in `data/raw/metadata/`
+4. Run preprocessing: `python preprocess_data.py`
+
+## Model Training
+
+```bash
+# Train all models
+python train_multimodal.py --folds 5 --epochs 50
+
+# Train specific component
+python train_multimodal.py --model cnn --epochs 30
+python train_multimodal.py --model vit --epochs 20
+python train_multimodal.py --model xgboost
+```
+
+## Container Registry
+
+Pull pre-built image:
+```bash
+docker pull your-registry/multimodal-covid:latest
+```
+
+## Hardware Benchmarks
+
+| Component | GPU Time | CPU Time | Memory |
+|-----------|----------|----------|--------|
+| CNN Training | 15 min | 45 min | 4GB |
+| ViT Training | 2 hours | 8 hours | 12GB |
+| XGBoost | 5 min | 15 min | 2GB |
+| Full Pipeline | 2.5 hours | 10 hours | 16GB |
