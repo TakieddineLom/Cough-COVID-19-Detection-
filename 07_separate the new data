@@ -1,0 +1,24 @@
+import pandas as pd
+import shutil
+import os
+
+# Read the CSV file
+df = pd.read_csv('../Covid_19 Project/Newfeat.csv')
+
+# Create a new folder for the copied files
+output_folder = '../Covid_19 Project/new_folder/'
+os.makedirs(output_folder, exist_ok=True)
+
+
+# Get the input folder path
+input_folder = os.path.dirname('../Covid_19 Project/Audio Prepro/')
+
+# Iterate over the 'file' column and copy the corresponding files
+for filename in df['file']:
+    wav_filename = os.path.join(input_folder, f'{filename}.wav')
+    if os.path.exists(wav_filename):
+        shutil.copy(wav_filename, output_folder)
+
+
+# Print a message indicating the process is complete
+print(f"All existing files listed in the CSV have been copied to '{output_folder}' folder.")
