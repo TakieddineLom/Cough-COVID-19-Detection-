@@ -6,7 +6,7 @@
 ```bash
 # Clone repository
 git clone <repository-url>
-cd multimodal-covid-detection
+cd Cough-COVID-19-Detection-
 
 # Run setup script
 chmod +x setup.sh
