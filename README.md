@@ -30,7 +30,7 @@ conda activate multimodal-covid
 pip install -r requirements.txt
 
 # Run the framework
-python multimodal_covid_detection.py
+python python 13_CNN-ViT-XGb.py.py
 ```
 
 ### Option 3: pip Installation
