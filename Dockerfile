@@ -45,8 +45,6 @@ RUN mkdir -p /app/models /app/data /app/logs
 # Set permissions
 RUN chmod +x /app/*.py
 
-# Expose port for any web interface (optional)
-EXPOSE 8000
 
 # Command to run the application
 CMD ["python", "13_CNN-ViT-XGb.py"]
